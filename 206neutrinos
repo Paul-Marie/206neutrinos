@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+
+from sys import argv, stdout
+from math import pow, sqrt
+
+class   BadArgumentError(Exception):
+    def __init__(self, message, errors = "BadArgumentError"):
+        super().__init__(message)
+        self.errors = errors
+
+class   Neutrinos():
+    """ This class contain all arithmetic methods """
+    def __init__(self, value, arithmetic, harmonic, average):
+        if value < 0 or arithmetic < 0 or harmonic < 0 or average < 0:
+            raise BadArgumentError("Du skal passere positive argumenter")
+        self.value = value
+        self.arithmetic = arithmetic
+        self.harmonic = harmonic
+        self.average = average
+        self.root = 0
+    def setValue(self):
+        self.value += 1
+    def getStandardDeviation(self, index):
+        self.average = sqrt((((pow(self.average, 2) + pow(self.arithmetic, 2))
+        * (self.value - 1) + pow(index, 2)) / self.value) - pow(((self.arithmetic
+        * (self.value - 1)) + index) / self.value, 2))
+    def getArithmeticMean(self, index):
+        self.arithmetic = ((self.arithmetic * (self.value - 1)) + index) / self.value
+    def getRootMean(self, index):
+        self.root = sqrt((((pow(self.average, 2) + pow(self.arithmetic, 2))
+        * (self.value - 1)) + pow(index, 2)) / self.value)
+    def getHarmonicMean(self, index):
+        self.harmonic = self.value / (((1 / self.harmonic) * (self.value - 1)) + (1 / index))
+    def printValue(self):
+        print("\tantal mãlinder :\t%.0f" % self.value)
+        print("\tstandardafvilgelse :\t%.2f" % self.average)
+        print("\taritmetisk gennemsnit :\t%.2f" % self.arithmetic)
+        print("\tkvadratisk gennemsnit :\t%.2f" % self.root)
+        print("\tharmonisk gennemsnit :\t%.2f\n" % self.harmonic)
+
+def     manHelp():
+    """ This function will print the help """
+    print("USAGE\n\t./206neutrinos n a h sd\n\nDESCRIPTION\n\tn\tnumber of values")
+    print("\ta\tarithmetic mean\n\th\tharmonic mean\n\tsd\tstandard deviation")
+
+# This function have got a blocking input() method
+def loop(obj):
+    """ Loop until "ENDE" keyword is typied """
+    while (True):
+        string = input("indtast din vaerdi :  ")
+        if string == "ENDE":
+            exit(0)
+        index = int(string)
+        obj.setValue()
+        obj.getRootMean(index)
+        obj.getStandardDeviation(index)
+        obj.getArithmeticMean(index)
+        obj.getHarmonicMean(index)
+        obj.printValue()
+
+# Do not put more information in this function, it's must be clearer as possible
+def     main():
+    """ Main function who perform program's core action like arguments resolution """
+    try:
+        if len(argv) == 2:
+            if argv[1] == "-h":
+                manHelp()
+            else:
+                raise BadArgumentError("Ugyldigt antal parametre, gentag med '-h'")
+        elif len(argv) == 5:
+            obj = Neutrinos(int(argv[1]), int(argv[2]),
+                            int(argv[3]), int(argv[4]))
+            loop(obj)
+        else:
+            raise BadArgumentError("Ugyldigt antal parametre, gentag med '-h'")
+    except SystemExit:
+        exit(0)
+    except BaseException as error:
+        stdout.write(str(type(error).__name__) + ": {}\n".format(error))
+        exit(84)
+
+if __name__ == "__main__":
+    main()
